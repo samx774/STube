@@ -13,15 +13,25 @@ export const videosRouter = createTRPCRouter({
                 playback_policies: ['public'],
                 static_renditions: [
                     {
-                     resolution: "720p"   
+                        resolution: "720p"
                     },
                     {
-                     resolution: "480p"   
+                        resolution: "480p"
                     },
                     {
-                     resolution: "360p"   
+                        resolution: "360p"
                     },
-                ]
+                ],
+                input: [
+                    {
+                        generated_subtitles: [
+                            {
+                                language_code: "en",
+                                name: "English"
+                            }
+                        ]
+                    }
+                ],
             },
             cors_origin: "*" // set to your url in production
         })
@@ -38,9 +48,9 @@ export const videosRouter = createTRPCRouter({
             url: upload.url
         }
     }),
-    deleteEmpty: protectedProcedure.mutation(async ({ctx})=> {
-        const {id: userId} = ctx.user;
-        
+    deleteEmpty: protectedProcedure.mutation(async ({ ctx }) => {
+        const { id: userId } = ctx.user;
+
         await db.delete(videos).where(and(eq(videos.userId, userId), eq(videos.muxStatus, "waiting")))
     })
 })

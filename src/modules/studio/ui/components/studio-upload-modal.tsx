@@ -39,7 +39,10 @@ export default function StudioUploadModal() {
                 onOpenChange={onClose}
             >
                 {create.data ?
-                    <StudioUploader endpoint={create.data?.url} onSuccess={() => { }} />
+                    <StudioUploader endpoint={create.data?.url} onSuccess={() => {
+                        toast.success("Video uploaded successfully");
+                        deleteEmpty.reset();
+                     }} />
                     : <Loader2Icon className="animate-spin" />
                 }
             </ResponsiveDialog>
