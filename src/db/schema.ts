@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, uniqueIndex, uuid, integer, pgEnum } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-
+import { createUpdateSchema, createInsertSchema, createSelectSchema } from 'drizzle-zod'
 
 export const users = pgTable("users", {
     id: uuid("id").primaryKey().defaultRandom(),
@@ -47,7 +47,11 @@ export const videos = pgTable("videos", {
     categoryId: uuid("category_id").references(() => categories.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-})
+});
+
+export const insertVideoSchema = createInsertSchema(videos);
+export const updateVideoSchema = createUpdateSchema(videos);
+export const selectVideoSchema = createSelectSchema(videos);
 
 // not required
 export const videoRelations = relations(videos, ({ one }) => ({

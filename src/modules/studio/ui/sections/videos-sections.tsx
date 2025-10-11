@@ -1,31 +1,84 @@
 "use client"
 
 import { InfiniteScroll } from "@/components/infinite-scroll"
-import { DEFAULT_LIMIT } from "@/constants"
-import { trpc } from "@/trpc/client"
-import { Loader2Icon, LockIcon, LockOpenIcon } from "lucide-react"
-import { Suspense } from "react"
-import { ErrorBoundary } from "react-error-boundary"
-import { format } from "date-fns"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
-    TableRow,
+    TableRow
 } from "@/components/ui/table"
-import Link from "next/link"
+import { DEFAULT_LIMIT } from "@/constants"
 import VideoThumbnail from "@/modules/videos/ui/components/video-thumbnail"
+import { trpc } from "@/trpc/client"
+import { format } from "date-fns"
+import { Globe2Icon, LockIcon } from "lucide-react"
+import Link from "next/link"
+import { Suspense } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 
 export const VideosSection = () => {
     return (
-        <Suspense fallback={<Loader2Icon className="animate-spin" />}>
+        <Suspense fallback={<VideosSectionSkeleton />}>
             <ErrorBoundary fallback={<div>Something went wrong</div>}>
                 <VideosSectionSuspense />
             </ErrorBoundary>
         </Suspense>
+    )
+}
+
+function VideosSectionSkeleton() {
+    return (
+        <div className="border-y">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="ps-6 w-[510px]">Video</TableHead>
+                        <TableHead>Visibility</TableHead>
+                        <TableHead>Stauts</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead className="text-end">Views</TableHead>
+                        <TableHead className="text-end">Comments</TableHead>
+                        <TableHead className="text-end pe-6">Likes</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
+                        <TableRow key={index}>
+                            <TableCell className="pl-6">
+                                <div className="flex items-center gap-4">
+                                    <Skeleton className="h-20 w-36" />
+                                    <div className="flex flex-col gap-2">
+                                        <Skeleton className="h-4 w-[100px]" />
+                                        <Skeleton className="h-3 w-[150px]" />
+                                    </div>
+                                </div>
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton className="h-4 w-20" />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton className="h-4 w-16" />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton className="h-4 w-24" />
+                            </TableCell>
+                            <TableCell className="ml-auto">
+                                <Skeleton className="h-4 w-12" />
+                            </TableCell>
+                            <TableCell className="ml-auto">
+                                <Skeleton className="h-4 w-full" />
+                            </TableCell>
+                            <TableCell className="ml-auto pe-6">
+                                <Skeleton className="h-4 w-full" />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </div>
     )
 }
 
@@ -54,14 +107,14 @@ function VideosSectionSuspense() {
                         {videos.pages.flatMap(page => page.items).map(video => (
                             <Link key={video.id} href={`/studio/videos/${video.id}`} legacyBehavior>
                                 <TableRow className="cursor-pointer">
-                                    <TableCell>
+                                    <TableCell className="ps-6">
                                         <div className="flex items-center gap-4">
                                             <div className="relative aspect-video w-36 shrink-0">
                                                 <VideoThumbnail duration={video.duration || 0} imageUrl={video.thumbnailUrl} previewUrl={video.previewUrl} title={video.title} />
                                             </div>
                                             <div className="flex flex-col overflow-hidden gap-y-1">
                                                 <span className="line-clamp-1 text-sm">{video.title}</span>
-                                                <span className="line-clamp-1 text-xs text-muted-foreground">{video.description || "No description"}</span>
+                                                <p className="line-clamp-1 w-[200px] text-xs text-muted-foreground">{video.description || "No description"}</p>
                                             </div>
                                         </div>
                                     </TableCell>
@@ -70,7 +123,7 @@ function VideosSectionSuspense() {
                                             {video.visibility === "private" ?
                                                 <LockIcon className="size-4 me-1" />
                                                 :
-                                                <LockOpenIcon className="size-4 me-1" />
+                                                <Globe2Icon className="size-4 me-1" />
                                             }
                                             {video.visibility}
                                         </div>
@@ -83,13 +136,13 @@ function VideosSectionSuspense() {
                                     <TableCell className="text-sm truncate">
                                         {format(new Date(video.createdAt), "d MMM yyyy")}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="text-end">
                                         views
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="text-end">
                                         comments
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="text-end pe-6">
                                         likes
                                     </TableCell>
                                 </TableRow>
