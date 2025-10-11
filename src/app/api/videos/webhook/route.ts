@@ -1,6 +1,7 @@
 import { db } from '@/db';
 import { videos } from '@/db/schema';
 import { mux } from '@/lib/mux';
+import { UTApi } from "uploadthing/server";
 import {
     VideoAssetCreatedWebhookEvent,
     VideoAssetDeletedWebhookEvent,
@@ -71,10 +72,22 @@ export const POST = async (req: Request) => {
                 return new Response("Missing upload_id", { status: 400 })
             }
 
-            const thumbnailUrl = `https://image.mux.com/${playpbackId}/thumbnail.png`;
-            const previewUrl = `https://image.mux.com/${playpbackId}/animated.gif`;
+            const tempThumbnailUrl = `https://image.mux.com/${playpbackId}/thumbnail.png`;
+            const tempPreviewUrl = `https://image.mux.com/${playpbackId}/animated.gif`;
             const duration = data.duration ? Math.round(data.duration * 1000) : 0;
 
+            const utapi = new UTApi()
+            const [uploadedThumbnail, uploadedPreview] = await utapi.uploadFilesFromUrl([
+                tempThumbnailUrl,
+                tempPreviewUrl
+            ])
+
+            if (!uploadedThumbnail.data || !uploadedPreview.data) {
+                return new Response("Failed to uploadedPreview files", { status: 500 })
+            }
+
+            const { key: thumbnailKey, url: thumbnailUrl } = uploadedThumbnail.data
+            const { key: previewKey, url: previewUrl } = uploadedPreview.data
             await db
                 .update(videos)
                 .set({
@@ -82,7 +95,9 @@ export const POST = async (req: Request) => {
                     muxPlaybackId: playpbackId,
                     muxAssetId: data.id,
                     thumbnailUrl,
+                    thumbnailKey,
                     previewUrl,
+                    previewKey,
                     duration,
                 })
                 .where(eq(videos.muxUploadId, data.upload_id))
@@ -103,9 +118,22 @@ export const POST = async (req: Request) => {
         }
         case "video.asset.deleted": {
             const data = payload.data as VideoAssetDeletedWebhookEvent["data"];
+            const utapi = new UTApi()
+
             if (!data.upload_id) {
                 return new Response("Missing upload_id", { status: 400 })
             }
+
+            const [existingVideo] = await db
+                .select()
+                .from(videos)
+                .where(eq(videos.muxUploadId, data.upload_id))
+
+            if (!existingVideo.thumbnailKey || !existingVideo.previewKey) {
+                return new Response("Video Not Found", { status: 404 })
+            }
+            await utapi.deleteFiles([existingVideo.thumbnailKey, existingVideo.previewKey])
+
             await db
                 .delete(videos)
                 .where(eq(videos.muxUploadId, data.upload_id))

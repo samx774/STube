@@ -6,9 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "image.mux.com",
-        port: "",
-        pathname: "/**"
+        hostname: "utfs.io",
       }
     ]
   }
