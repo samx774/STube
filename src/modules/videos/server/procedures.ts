@@ -8,21 +8,21 @@ import { and, eq } from "drizzle-orm";
 import { UTApi } from "uploadthing/server";
 import { z } from "zod";
 export const videosRouter = createTRPCRouter({
-    generateDescription: protectedProcedure.input(z.object({ id: z.uuid() })).mutation(async ({ctx,input}) => {
-        const {id: userId} = ctx.user
+    generateDescription: protectedProcedure.input(z.object({ id: z.uuid() })).mutation(async ({ ctx, input }) => {
+        const { id: userId } = ctx.user
         const { workflowRunId } = await workflow.trigger({
             url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/description`,
-            body: {userId, videoId: input.id},
+            body: { userId, videoId: input.id },
             retries: 3,
         })
 
         return workflowRunId;
     }),
-    generateTitle: protectedProcedure.input(z.object({ id: z.uuid() })).mutation(async ({ctx,input}) => {
-        const {id: userId} = ctx.user
+    generateTitle: protectedProcedure.input(z.object({ id: z.uuid() })).mutation(async ({ ctx, input }) => {
+        const { id: userId } = ctx.user
         const { workflowRunId } = await workflow.trigger({
             url: `${process.env.UPSTASH_WORKFLOW_URL}/api/videos/workflows/title`,
-            body: {userId, videoId: input.id},
+            body: { userId, videoId: input.id },
             retries: 3,
         })
 
@@ -89,6 +89,7 @@ export const videosRouter = createTRPCRouter({
     }),
     delete: protectedProcedure.input(z.object({ id: z.uuid() })).mutation(async ({ ctx, input }) => {
         const { id: userId } = ctx.user;
+        const utapi = new UTApi()
         if (!input.id) {
             throw new TRPCError({ code: "BAD_REQUEST", message: "Video ID is required" })
         }
@@ -109,12 +110,19 @@ export const videosRouter = createTRPCRouter({
             throw new TRPCError({ code: "NOT_FOUND", message: "Video Asset ID Not Found" })
         }
 
-        const deleteVideoFromMux = await mux.video.assets.delete(existingVideo.muxAssetId)
+        if (existingVideo.thumbnailKey) {
+            console.log("++++++++++++DELETING THUMBNAIL++++++++++++");
 
-        const utapi = new UTApi()
-        await utapi.deleteFiles([existingVideo.thumbnailKey!, existingVideo.previewKey!])
+            await utapi.deleteFiles([existingVideo.thumbnailKey])
+        }
+        if (existingVideo.previewKey) {
+            console.log("++++++++++++DELETING PREVIEW++++++++++++");
+            await utapi.deleteFiles([existingVideo.previewKey])
+        }
 
         const [deletedVideo] = await db.delete(videos).where(and(eq(videos.id, input.id), eq(videos.userId, userId))).returning()
+        await mux.video.assets.delete(existingVideo.muxAssetId)
+
 
         if (!deletedVideo) {
             throw new TRPCError({ code: "NOT_FOUND", message: "Video Not Found" })
