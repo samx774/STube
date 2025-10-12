@@ -129,7 +129,7 @@ export const POST = async (req: Request) => {
                 .from(videos)
                 .where(eq(videos.muxUploadId, data.upload_id))
 
-            if (!existingVideo.thumbnailKey || !existingVideo.previewKey) {
+            if (!existingVideo?.thumbnailKey || !existingVideo?.previewKey) {
                 return new Response("Video Not Found", { status: 404 })
             }
             await utapi.deleteFiles([existingVideo.thumbnailKey, existingVideo.previewKey])

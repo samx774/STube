@@ -7,7 +7,8 @@ import {
     SidebarGroup,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem
+    SidebarMenuItem,
+    useSidebar
 } from "@/components/ui/sidebar"
 import { LogOutIcon, VideoIcon } from "lucide-react"
 import Link from "next/link"
@@ -15,6 +16,7 @@ import { usePathname } from "next/navigation"
 import StudioSidebarHeader from "./studio-sidebar-header"
 
 export const StudioSidebar = () => {
+    const { setOpenMobile } = useSidebar()
 
     const pathname = usePathname()
 
@@ -24,8 +26,8 @@ export const StudioSidebar = () => {
                 <SidebarGroup>
                     <SidebarMenu>
                         <StudioSidebarHeader />
-                        <SidebarMenuItem >
-                            <SidebarMenuButton isActive={pathname === '/studio'} tooltip={"Content"} asChild>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton onClick={() => setOpenMobile(false)} isActive={pathname === '/studio'} tooltip={"Content"} asChild>
                                 <Link href={'/studio'}>
                                     <VideoIcon className="size-5" />
                                     <span className="text-sm">Content</span>

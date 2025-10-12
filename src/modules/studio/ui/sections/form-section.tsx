@@ -10,7 +10,7 @@ import { updateVideoSchema } from "@/db/schema";
 import { VideoPlayer } from "@/modules/videos/ui/components/video-player";
 import { trpc } from "@/trpc/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CopyCheckIcon, CopyIcon, Globe2Icon, ImagePlusIcon, LockIcon, MoreVerticalIcon, RotateCcwIcon, SparklesIcon, TrashIcon } from "lucide-react";
+import { CopyCheckIcon, CopyIcon, Globe2Icon, ImagePlusIcon, Loader2Icon, LockIcon, MoreVerticalIcon, RotateCcwIcon, SparklesIcon, TrashIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from 'zod';
 import ThumbnailUploadModal from "../components/thumbnail-upload-modal";
+import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip"
 
 interface FormSectionProps {
     videoId: string;
@@ -51,6 +52,24 @@ export default function FormSection({ videoId }: FormSectionProps) {
         },
         onError: () => {
             toast.error("Failed to delete video");
+        }
+
+    });
+    const generateTitle = trpc.videos.generateTitle.useMutation({
+        onSuccess: () => {
+            toast.success("AI generation is now started...this may take some time you can check in a few seconds")
+        },
+        onError: () => {
+            toast.error("Failed to generate the title");
+        }
+
+    });
+    const generateDescription = trpc.videos.generateDescription.useMutation({
+        onSuccess: () => {
+            toast.success("AI generation is now started...this may take some time you can check in a few seconds")
+        },
+        onError: () => {
+            toast.error("Failed to generate the title");
         }
 
     });
@@ -118,7 +137,7 @@ export default function FormSection({ videoId }: FormSectionProps) {
                             </DropdownMenu>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    <div className="grid mb-6 grid-cols-1 lg:grid-cols-5 gap-6">
                         <div className="space-y-8 lg:col-span-3">
                             <FormField
                                 control={form.control}
@@ -126,7 +145,31 @@ export default function FormSection({ videoId }: FormSectionProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                            Title
+                                            <div className="flex items-center gap-x-2">
+                                                Title
+                                                <Tooltip>
+                                                    <TooltipTrigger type="button">
+                                                        <Button
+                                                            variant={'outline'}
+                                                            size={'icon'}
+                                                            type="button"
+                                                            className="rounded-full size-6 cursor-pointer [&_svg]:size-3"
+                                                            onClick={() => generateTitle.mutate({ id: videoId })}
+                                                            disabled={generateTitle.isPending || !video.muxTrackId}
+                                                        >
+                                                            {generateTitle.isPending
+                                                                ? <Loader2Icon className="animate-spin size-2" />
+                                                                : <SparklesIcon className="size-2" />
+                                                            }
+                                                        </Button>
+                                                        <TooltipContent>
+                                                            {!generateTitle.isPending ?
+                                                                <p>Generate Title With AI</p>
+                                                                : <p>Loading</p>}
+                                                        </TooltipContent>
+                                                    </TooltipTrigger>
+                                                </Tooltip>
+                                            </div>
                                         </FormLabel>
                                         <FormControl>
                                             <Input {...field}
@@ -142,7 +185,31 @@ export default function FormSection({ videoId }: FormSectionProps) {
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>
-                                            Description
+                                            <div className="flex items-center gap-x-2">
+                                                Description
+                                                <Tooltip>
+                                                    <TooltipTrigger type="button">
+                                                        <Button
+                                                            variant={'outline'}
+                                                            size={'icon'}
+                                                            type="button"
+                                                            className="rounded-full size-6 cursor-pointer [&_svg]:size-3"
+                                                            onClick={() => generateDescription.mutate({ id: videoId })}
+                                                            disabled={generateDescription.isPending || !video.muxTrackId}
+                                                        >
+                                                            {generateDescription.isPending
+                                                                ? <Loader2Icon className="animate-spin size-2" />
+                                                                : <SparklesIcon className="size-2" />
+                                                            }
+                                                        </Button>
+                                                        <TooltipContent>
+                                                            {!generateDescription.isPending ?
+                                                                <p>Generate Description With AI</p>
+                                                                : <p>Loading</p>}
+                                                        </TooltipContent>
+                                                    </TooltipTrigger>
+                                                </Tooltip>
+                                            </div>
                                         </FormLabel>
                                         <FormControl>
                                             <Textarea
@@ -169,8 +236,8 @@ export default function FormSection({ videoId }: FormSectionProps) {
                                                 <Image fill alt="Thumbnail" src={video.thumbnailUrl || '/placeholder.svg'} className="object-cover" />
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button type="button" className="bg-foreground/50 cursor-pointer hover:bg-foreground absolute rounded-full top-1 end-1 opacity-100 md:opacity-0 group-hover:opacity-100 duration-200 size-7" size="icon">
-                                                            <MoreVerticalIcon className="text-background" />
+                                                        <Button disabled={restoreThumbnail.isPending} type="button" className="bg-foreground/50 cursor-pointer hover:bg-foreground absolute rounded-full top-1 end-1 opacity-100 md:opacity-0 group-hover:opacity-100 duration-200 size-7" size="icon">
+                                                            {restoreThumbnail.isPending ? <Loader2Icon className="size-4 animate-spin" /> : <MoreVerticalIcon className="text-background" />}
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="start" side="right">
@@ -178,10 +245,10 @@ export default function FormSection({ videoId }: FormSectionProps) {
                                                             <ImagePlusIcon className="size-4" />
                                                             Change
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem>
+                                                        {/* <DropdownMenuItem onClick={()=> generateThumbnail.mutate({ id: videoId })}>
                                                             <SparklesIcon className="size-4" />
                                                             AI-generated
-                                                        </DropdownMenuItem>
+                                                        </DropdownMenuItem> */}
                                                         <DropdownMenuItem onClick={() => restoreThumbnail.mutateAsync({ id: videoId })}>
                                                             <RotateCcwIcon className="size-4" />
                                                             Restore
