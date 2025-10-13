@@ -7,11 +7,12 @@ import { GoogleGenAI } from "@google/genai";
 interface InputType {
     userId: string;
     videoId: string;
+    prompt: string;
 }
 
 const ai = new GoogleGenAI({});
 
-const TITLE_SYSTEM_PROMPT = `Your task is to take an input and based on it generate an SEO-focused title for a YouTube video based on its transcript. Please follow these guidelines:
+const TITLE_SYSTEM_PROMPT = `Your task is to take an input and based on it generate an SEO-focused title for a YouTube video. Please follow these guidelines:
 - Be concise but descriptive, using relevant keywords to improve discoverability.
 - Highlight the most compelling or unique aspect of the video content.
 - Avoid jargon or overly complex language unless it directly supports searchability.
@@ -21,10 +22,19 @@ const TITLE_SYSTEM_PROMPT = `Your task is to take an input and based on it gener
 
 and the Input is: `;
 
+const DESCRIPTION_SYSTEM_PROMPT = `Your task is to take an input and based on it generate an SEO-focused Descrition for a YouTube video. Please follow these guidelines:
+- Create a short, engaging description based only on the given keywords or phrases.
+- Keep it clear, catchy, and relevant to the topic.
+- Avoid filler words, complex language, or unnecessary details.
+- Focus on attracting viewers and summarizing what the video offers.
+- Limit the description to 3–5 sentences and under 200 characters.
+
+and the input is: `;
+
 export const { POST } = serve(
     async (context) => {
         const input = context.requestPayload as InputType;
-        const { videoId, userId } = input;
+        const { videoId, userId, prompt } = input;
 
         const video = await context.run("get-video", async () => {
             const [existingVideo] = await db
@@ -42,22 +52,24 @@ export const { POST } = serve(
             return existingVideo
         })
 
-        const transcript = await context.run("get-transcript", async () => {
-            const trackUr = `http://stream.mux.com/${video.muxPlaybackId}/text/${video.muxTrackId}.txt`;
-            const response = await fetch(trackUr)
-            const text = response.text()
-
-            if (!text) {
-                throw new Error('Bad request')
-            }
-
-            return text;
-        })
 
         const generatedTitle = await context.run("generate-title", async () => {
             const response = await ai.models.generateContent({
                 model: "gemini-2.5-flash-lite",
-                contents: `${TITLE_SYSTEM_PROMPT} ${transcript}`,
+                contents: `${TITLE_SYSTEM_PROMPT} ${prompt}`,
+                config: {
+                    thinkingConfig: {
+                        thinkingBudget: 0
+                    }
+                }
+            });
+
+            return response.text
+        })
+        const generatedDescription = await context.run("generate-description", async () => {
+            const response = await ai.models.generateContent({
+                model: "gemini-2.5-flash-lite",
+                contents: `${DESCRIPTION_SYSTEM_PROMPT} ${prompt}`,
                 config: {
                     thinkingConfig: {
                         thinkingBudget: 0
@@ -69,14 +81,15 @@ export const { POST } = serve(
         })
 
         if (!generatedTitle) throw new Error('Bad request')
-            
+
         await context.run("update-step", async () => {
 
 
             await db
                 .update(videos)
                 .set({
-                    title: generatedTitle || video.title
+                    title: generatedTitle || video.title,
+                    description: generatedDescription || video.description
                 })
                 .where(and(
                     eq(videos.id, video.id),

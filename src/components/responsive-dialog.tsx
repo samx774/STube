@@ -11,10 +11,11 @@ import {
     DrawerHeader,
     DrawerTitle,
 } from "@/components/ui/drawer"
+import { ReactElement } from "react";
 
 interface ResponsiveDialogProps {
     children: React.ReactNode;
-    title: string;
+    title: string | ReactElement;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
@@ -29,7 +30,7 @@ export default function ResponsiveDialog({
     if (isMobile) {
         return (
             <Drawer open={open} onOpenChange={onOpenChange}>
-                <DrawerContent>
+                <DrawerContent className="px-4 py-2 !rounded-t-3xl">
                     <DrawerHeader>
                         <DrawerTitle>{title}</DrawerTitle>
                     </DrawerHeader>
