@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { updateVideoSchema, users, videos } from "@/db/schema";
+import { updateVideoSchema, users, videos, videoViews } from "@/db/schema";
 import { mux } from "@/lib/mux";
 import { workflow } from "@/lib/workflow";
 import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
@@ -14,12 +14,12 @@ export const videosRouter = createTRPCRouter({
                 ...getTableColumns(videos),
                 user: {
                     ...getTableColumns(users)
-                }
+                },
+                viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id))
             })
             .from(videos)
             .innerJoin(users, eq(videos.userId, users.id))
             .where(eq(videos.id, input.id))
-
         if (!existingVideo) throw new TRPCError({ code: "NOT_FOUND" })
 
         return existingVideo
