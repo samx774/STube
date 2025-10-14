@@ -22,6 +22,7 @@ type WebhookEvent =
     | VideoAssetTrackReadyWebhookEvent
 
 export const POST = async (req: Request) => {
+
     if (!SINGING_SECRET) {
         return new Response("Missing MUX Webhook Secret", { status: 500 })
     }
