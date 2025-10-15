@@ -27,7 +27,7 @@ export default function VideoReactions({
         onError: (error) => {
             toast.error("Something went wrong")
             if (error.data?.code === "UNAUTHORIZED") {
-                clerk.signOut()
+                clerk.openSignIn()
             }
         }
     })
@@ -38,7 +38,7 @@ export default function VideoReactions({
         onError: (error) => {
             toast.error("Something went wrong")
             if (error.data?.code === "UNAUTHORIZED") {
-                clerk.signOut()
+                clerk.openSignIn()
             }
         }
     })
