@@ -1,4 +1,5 @@
 "use client"
+import { Skeleton } from "@/components/ui/skeleton";
 import MuxPlayer from "@mux/mux-player-react";
 
 interface VideoPlayerProps {
@@ -6,6 +7,11 @@ interface VideoPlayerProps {
     thumbnailUrl?: string | null | undefined;
     autoPlay?: boolean;
     onPlay?: () => void;
+}
+
+
+export function VideoPlayerSkeleton() {
+    return <div className="aspect-video bg-foreground rounded-xl" />
 }
 
 export const VideoPlayer = ({
