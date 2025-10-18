@@ -1,13 +1,14 @@
-import Link from "next/link";
-import { CommentsGetManyOutput } from "../../types";
-import UserAvatar from "@/components/user-avatar";
-import { formatDistanceToNow } from "date-fns";
-import { trpc } from "@/trpc/client";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
-import { Loader2Icon, MessageSquareIcon, MoreVerticalIcon, Trash2Icon } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import UserAvatar from "@/components/user-avatar";
+import { cn } from "@/lib/utils";
+import { trpc } from "@/trpc/client";
 import { useAuth, useClerk } from "@clerk/nextjs";
+import { formatDistanceToNow } from "date-fns";
+import { Loader2Icon, MessageSquareIcon, MoreVerticalIcon, ThumbsDownIcon, ThumbsUpIcon, Trash2Icon } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
+import { CommentsGetManyOutput } from "../../types";
 
 
 interface CommentItemProps {
@@ -15,6 +16,28 @@ interface CommentItemProps {
 }
 
 export const CommentItem = ({ comment }: CommentItemProps) => {
+    const like = trpc.commentReactions.like.useMutation({
+        onSuccess: () => {
+            utils.comments.getMany.invalidate({videoId: comment.videoId})
+        },
+        onError: (error) => {
+            toast.error("Something went wrong")
+            if (error.data?.code === "UNAUTHORIZED") {
+                clerk.openSignIn()
+            }
+        },
+    })
+    const dislike = trpc.commentReactions.dislike.useMutation({
+        onSuccess: () => {
+            utils.comments.getMany.invalidate({videoId: comment.videoId})
+        },
+        onError: (error) => {
+            toast.error("Something went wrong")
+            if (error.data?.code === "UNAUTHORIZED") {
+                clerk.openSignIn()
+            }
+        },
+    })
     const { userId } = useAuth()
     const clerk = useClerk()
     const utils = trpc.useUtils();
@@ -54,8 +77,40 @@ export const CommentItem = ({ comment }: CommentItemProps) => {
                         </div>
                     </Link>
                     <p className="text-sm">{comment.value}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center">
+                            <Button
+                                disabled={like.isPending || dislike.isPending}
+                                variant={"ghost"}
+                                size={"icon"}
+                                className="size-8"
+                                onClick={() => like.mutate({ commentId: comment.id })}
+                            >
+                                <ThumbsUpIcon className={cn(
+                                    comment.viewerReaction === "like" && "fill-foreground",
+                                )} />
+                            </Button>
+                            <span className="text-xs text-muted-foreground">
+                                {comment.likeCount}
+                            </span>
+                            <Button
+                                disabled={like.isPending || dislike.isPending}
+                                variant={"ghost"}
+                                size={"icon"}
+                                className="size-8"
+                                onClick={() => dislike.mutate({ commentId: comment.id })}
+                            >
+                                <ThumbsDownIcon className={cn(
+                                    comment.viewerReaction === "dislike" && "fill-foreground",
+                                )} />
+                            </Button>
+                            <span className="text-xs text-muted-foreground">
+                                {comment.dislikeCount}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
                         <Button variant={"ghost"} size={"icon"} className="size-8">
                             {remove.isPending ? (
