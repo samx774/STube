@@ -32,7 +32,7 @@ export default function CommentReplies({
                     data?.pages
                         .flatMap(page => page.items)
                         .map(comment => (
-                            <CommentItem key={comment.id} comment={comment} variant="reply" />
+                            <CommentItem key={comment.id} comment={comment} variant="reply" videoId={videoId} />
                         ))
                 }
             </div>

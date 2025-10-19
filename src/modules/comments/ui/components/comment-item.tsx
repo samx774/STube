@@ -1,26 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import UserAvatar from "@/components/user-avatar";
+import { DEFAULT_LIMIT } from "@/constants";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronDownIcon, ChevronUpIcon, Loader2Icon, MessageSquareIcon, MoreVerticalIcon, ThumbsDownIcon, ThumbsUpIcon, Trash2Icon } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { toast } from "sonner";
 import { CommentsGetManyOutput } from "../../types";
-import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { CommentForm } from "./comment-form";
 import CommentReplies from "./comment-replies";
 
 
 interface CommentItemProps {
     comment: CommentsGetManyOutput["items"][number];
+    videoId: string;
     variant?: "reply" | "comment"
 }
 
-export const CommentItem = ({ comment, variant = "comment" }: CommentItemProps) => {
+export const CommentItem = ({ comment, variant = "comment", videoId }: CommentItemProps) => {
     const [isReplyOpen, setIsReplyOpen] = useState(false)
     const [isRepliesOpen, setIsRepliesOpen] = useState(false)
     const { userId } = useAuth()
@@ -28,26 +29,120 @@ export const CommentItem = ({ comment, variant = "comment" }: CommentItemProps) 
     const utils = trpc.useUtils();
 
     const like = trpc.commentReactions.like.useMutation({
-        onSuccess: () => {
-            utils.comments.getMany.invalidate({ videoId: comment.videoId })
+        onMutate: async ({ commentId }) => {
+            await utils.comments.getMany.cancel();
+
+            const prev = utils.comments.getMany.getInfiniteData({ videoId, limit: DEFAULT_LIMIT });
+
+            utils.comments.getMany.setInfiniteData({ videoId, limit: DEFAULT_LIMIT }, (old) => {
+                if (!old) return old;
+
+                return {
+                    ...old,
+                    pages: old.pages.map((page) => ({
+                        ...page,
+                        items: page.items.map((item) => {
+                            if (item.id !== commentId) return item;
+
+                            let newLikeCount = item.likeCount;
+                            let newDislikeCount = item.dislikeCount;
+                            const oldViewerReaction = item.viewerReaction;
+                            let newViewerReaction: "like" | "dislike" | null = "like";
+
+                            if (oldViewerReaction === "like") {
+                                newLikeCount--;
+                                newViewerReaction = null;
+                            } else if (oldViewerReaction === "dislike") {
+                                newDislikeCount--;
+                                newLikeCount++;
+                                newViewerReaction = "like";
+                            } else {
+                                newLikeCount++;
+                            }
+
+                            return {
+                                ...item,
+                                likeCount: newLikeCount,
+                                dislikeCount: newDislikeCount,
+                                viewerReaction: newViewerReaction,
+                            };
+                        }),
+                    })),
+                };
+            });
+
+            return { prev };
         },
-        onError: (error) => {
-            toast.error("Something went wrong")
-            if (error.data?.code === "UNAUTHORIZED") {
+        onError: (error, _, context) => {
+            if(error.data?.code === "UNAUTHORIZED") {
                 clerk.openSignIn()
             }
+            if (context?.prev)
+                utils.comments.getMany.setInfiniteData(
+                    { videoId, limit: DEFAULT_LIMIT },
+                    context.prev
+                );
         },
+        onSettled: () => {
+            utils.comments.getMany.invalidate({ videoId})
+        }
     })
     const dislike = trpc.commentReactions.dislike.useMutation({
-        onSuccess: () => {
-            utils.comments.getMany.invalidate({ videoId: comment.videoId })
+        onMutate: async ({ commentId }) => {
+            await utils.comments.getMany.cancel();
+
+            const prev = utils.comments.getMany.getInfiniteData({ videoId, limit: DEFAULT_LIMIT });
+
+            utils.comments.getMany.setInfiniteData({ videoId, limit: DEFAULT_LIMIT }, (old) => {
+                if (!old) return old;
+
+                return {
+                    ...old,
+                    pages: old.pages.map((page) => ({
+                        ...page,
+                        items: page.items.map((item) => {
+                            if (item.id !== commentId) return item;
+
+                            let newLikeCount = item.likeCount;
+                            let newDislikeCount = item.dislikeCount;
+                            const oldViewerReaction = item.viewerReaction;
+                            let newViewerReaction: "like" | "dislike" | null = "dislike";
+
+                            if (oldViewerReaction === "dislike") {
+                                newDislikeCount--;
+                                newViewerReaction = null;
+                            } else if (oldViewerReaction === "like") {
+                                newLikeCount--;
+                                newDislikeCount++;
+                                newViewerReaction = "dislike";
+                            } else {
+                                newDislikeCount++;
+                            }
+
+                            return {
+                                ...item,
+                                likeCount: newLikeCount,
+                                dislikeCount: newDislikeCount,
+                                viewerReaction: newViewerReaction,
+                            };
+                        }),
+                    })),
+                };
+            });
+
+            return { prev };
         },
-        onError: (error) => {
+        onError: (error, _, context) => {
             toast.error("Something went wrong")
             if (error.data?.code === "UNAUTHORIZED") {
                 clerk.openSignIn()
             }
+            if (context?.prev)
+                utils.comments.getMany.setInfiniteData({ videoId: videoId, limit: DEFAULT_LIMIT }, context.prev)
         },
+        onSettled: () => {
+            utils.comments.getMany.invalidate({ videoId })
+        }
     })
     const remove = trpc.comments.remove.useMutation({
         onSuccess: () => {
