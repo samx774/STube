@@ -94,7 +94,7 @@ export const CommentItem = ({ comment, variant = "comment" }: CommentItemProps) 
                                 disabled={like.isPending || dislike.isPending}
                                 variant={"ghost"}
                                 size={"icon"}
-                                className="size-8"
+                                className="size-8 disabled:opacity-100"
                                 onClick={() => like.mutate({ commentId: comment.id })}
                             >
                                 <ThumbsUpIcon className={cn(
@@ -108,7 +108,7 @@ export const CommentItem = ({ comment, variant = "comment" }: CommentItemProps) 
                                 disabled={like.isPending || dislike.isPending}
                                 variant={"ghost"}
                                 size={"icon"}
-                                className="size-8"
+                                className="size-8 disabled:opacity-100"
                                 onClick={() => dislike.mutate({ commentId: comment.id })}
                             >
                                 <ThumbsDownIcon className={cn(
