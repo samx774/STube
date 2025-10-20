@@ -33,12 +33,13 @@ const VideoSectionSkeleton = () => {
 }
 
 function VideoSectionSuspense({ videoId }: VideoSectionProps) {
-    const { isSignedIn} = useAuth() 
+    const { isSignedIn } = useAuth()
     const utils = trpc.useUtils()
     const [video] = trpc.videos.getOne.useSuspenseQuery({ id: videoId })
     const createView = trpc.videoViews.create.useMutation({
         onSuccess: () => {
             utils.videos.getOne.invalidate({ id: videoId })
+            utils.suggestions.getMany.invalidate({ videoId })
         }
     })
 
@@ -58,7 +59,7 @@ function VideoSectionSuspense({ videoId }: VideoSectionProps) {
                     playbackId={video.muxPlaybackId}
                     thumbnailUrl={video.thumbnailUrl} />
             </div>
-            <VideoBanner status={video.muxStatus}/>
+            <VideoBanner status={video.muxStatus} />
             <VideoTopRow video={video} />
         </>
     )
