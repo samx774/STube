@@ -51,7 +51,7 @@ function VideoSectionSuspense({ videoId }: VideoSectionProps) {
     return (
         <>
             <div className={cn(
-                "aspect-video bg-foreground rounded-xl overflow-hidden relative",
+                "aspect-video bg-foreground md:rounded-xl overflow-hidden relative",
                 video.muxStatus !== "ready" && "rounded-b-none"
             )}>
                 <VideoPlayer
