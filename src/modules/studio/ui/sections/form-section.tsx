@@ -57,8 +57,17 @@ export default function FormSection({ videoId }: FormSectionProps) {
         }
 
     });
+    const revalidate = trpc.videos.revalidate.useMutation({
+        onSuccess: () => {
+            utils.studio.getMany.invalidate();
+            utils.studio.getOne.invalidate({ id: videoId });
+            toast.success("Video revalidated successfully");
+        },
+        onError: () => {
+            toast.error("Failed to revalidate video");
+        }
 
-
+    });
     const restoreThumbnail = trpc.videos.restoreThumbnail.useMutation({
         onSuccess: () => {
             utils.studio.getOne.invalidate({ id: videoId });
@@ -89,6 +98,9 @@ export default function FormSection({ videoId }: FormSectionProps) {
             setIsCopied(false);
         }, 2000);
     }
+    const watchedValues = form.watch();
+    const isSameAsDefault = JSON.stringify(watchedValues) === JSON.stringify(video);
+
 
     return (
         <>
@@ -110,7 +122,7 @@ export default function FormSection({ videoId }: FormSectionProps) {
                             <p className="text-muted-foreground text-sm">Manage your video details</p>
                         </div>
                         <div className="flex items-center gap-x-2">
-                            <Button className="cursor-pointer" type="submit" disabled={update.isPending}>
+                            <Button className="cursor-pointer" type="submit" disabled={update.isPending || isSameAsDefault}>
                                 Save
                             </Button>
                             <DropdownMenu>
@@ -120,6 +132,10 @@ export default function FormSection({ videoId }: FormSectionProps) {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => revalidate.mutateAsync({ id: videoId })}>
+                                        <RotateCcwIcon className="size-4 me-2" />
+                                        Revalidate
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => remove.mutateAsync({ id: videoId })}>
                                         <TrashIcon className="size-4 me-2" />
                                         Delete

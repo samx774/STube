@@ -2,9 +2,11 @@
 
 import { trpc } from "@/trpc/client"
 import { DEFAULT_LIMIT } from "@/constants"
-import { VideoRowCard } from "../components/video-row-card"
-import { VideoGridCard } from "../components/video-grid-card"
+import { VideoRowCard, VideoRowCardSkeleton } from "../components/video-row-card"
+import { VideoGridCard, VideoGridCardSkeleton } from "../components/video-grid-card"
 import { InfiniteScroll } from "@/components/infinite-scroll"
+import { Suspense } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 
 interface suggestionsSectionProps {
     videoId: string;
@@ -12,6 +14,38 @@ interface suggestionsSectionProps {
 }
 
 export default function SuggestionsSection({ videoId, isManual }: suggestionsSectionProps) {
+    return (
+        <Suspense fallback={<SuggestionsSectionSkeleton />}>
+            <ErrorBoundary fallback={<p>Error</p>}>
+                <SuggestionsSectionSuspense videoId={videoId} isManual={isManual} />
+            </ErrorBoundary>
+        </Suspense>
+    )
+}
+
+function SuggestionsSectionSkeleton() {
+    return (
+        <>
+            <div className="hidden xl:block space-y-3">
+                {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
+                    <VideoRowCardSkeleton
+                        key={index}
+                        size="default"
+                    />
+                ))}
+            </div>
+            <div className="xl:hidden grid md:grid-cols-3 sm:grid-cols-2 gap-4">
+                {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
+                    <VideoGridCardSkeleton
+                        key={index}
+                    />
+                ))}
+            </div>
+        </>
+    )
+}
+
+function SuggestionsSectionSuspense({ videoId, isManual }: suggestionsSectionProps) {
     const [suggestions, query] = trpc.suggestions.getMany.useSuspenseInfiniteQuery({
         videoId,
         limit: DEFAULT_LIMIT,
@@ -30,13 +64,13 @@ export default function SuggestionsSection({ videoId, isManual }: suggestionsSec
                 ))}
             </div>
             <div className="xl:hidden block space-y-3">
-                <div className="grid md:grid-cols-3 sm:grid-cols-2 gap-2">
-                {suggestions.pages.flatMap(page => page.items).map((video) => (
-                    <VideoGridCard
-                        key={video.id}
-                        data={video}
-                    />
-                ))}
+                <div className="grid md:grid-cols-3 sm:grid-cols-2  gap-2">
+                    {suggestions.pages.flatMap(page => page.items).map((video) => (
+                        <VideoGridCard
+                            key={video.id}
+                            data={video}
+                        />
+                    ))}
                 </div>
             </div>
             <InfiniteScroll

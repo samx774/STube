@@ -5,10 +5,23 @@ import Link from "next/link";
 import UserAvatar from "@/components/user-avatar";
 import UserInfo from "@/modules/users/ui/components/user-info";
 import VideoMenu from "./video-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface VideoInfoProps {
     data: VideoGetManyOutput["items"][number];
     onRemove?: () => void;
+}
+
+export function VideoInfoSkeleton() {
+    return(
+        <div className="flex gap-3">
+            <Skeleton className="size-12 rounded-full shrink-0"/>
+            <div className="min-w-0 flex-1 space-y-2">
+                <Skeleton className="h-5 w-[90%]"/>
+                <Skeleton className="h-5 w-[70%]"/>
+            </div>
+        </div>
+    )
 }
 
 export function VideoInfo({ data, onRemove }: VideoInfoProps) {
@@ -23,8 +36,8 @@ export function VideoInfo({ data, onRemove }: VideoInfoProps) {
         }).format(data.viewCount);
     }, [data.viewCount]);
     return (
-        <div className="flex gap-3 mt-1">
-            <Link href={`/users/${data.user.id}`}>
+        <div className="flex gap-3 mt-1 sm:px-0 px-4">
+            <Link className="sm:hidden lg:block" href={`/users/${data.user.id}`}>
                 <UserAvatar
                     name={data.user.name}
                     imageUrl={data.user.imageUrl}

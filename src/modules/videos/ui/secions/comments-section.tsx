@@ -35,7 +35,7 @@ function CommentsSectionSuspense({ videoId }: CommentsSectionProps) {
     const [comments, query] = trpc.comments.getMany.useSuspenseInfiniteQuery({ videoId, limit: DEFAULT_LIMIT },
         { getNextPageParam: (lastPage) => lastPage.nextCursor, })
     return (
-        <div className="my-6">
+        <div className="my-6 px-4">
             <div className="flex flex-col gap-6">
                 <h2 className="text-xl font-bold">{comments.pages[0].totalCount} Comments</h2>
                 <CommentForm videoId={videoId} />
