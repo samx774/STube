@@ -55,6 +55,7 @@ function VideoSectionSuspense({ videoId }: VideoSectionProps) {
                 video.muxStatus !== "ready" && "rounded-b-none"
             )}>
                 <VideoPlayer
+                    autoPlay
                     onPlay={handlePlay}
                     playbackId={video.muxPlaybackId}
                     thumbnailUrl={video.thumbnailUrl} />
