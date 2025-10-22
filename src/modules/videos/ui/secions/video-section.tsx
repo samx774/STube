@@ -2,18 +2,23 @@
 
 import { cn } from "@/lib/utils";
 import { trpc } from "@/trpc/client";
-import { Suspense } from "react";
+import { Suspense, useEffect, useLayoutEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { VideoPlayer, VideoPlayerSkeleton } from "../components/video-player";
 import VideoBanner from "../components/video-banner";
 import VideoTopRow, { VideoTopRowSkeleton } from "../components/video-top-row";
 import { useAuth } from "@clerk/nextjs";
+import { useSidebar } from "@/components/ui/sidebar";
 
 interface VideoSectionProps {
     videoId: string;
 }
 
 export default function VideoSection({ videoId }: VideoSectionProps) {
+    const { setOpen } = useSidebar()
+    useLayoutEffect(() => {
+        setOpen(false)
+    }, [])
     return (
         <Suspense fallback={<VideoSectionSkeleton />}>
             <ErrorBoundary fallback={<p>error</p>}>

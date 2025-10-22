@@ -26,7 +26,7 @@ export default function SuggestionsSection({ videoId, isManual }: suggestionsSec
 function SuggestionsSectionSkeleton() {
     return (
         <>
-            <div className="hidden xl:block space-y-3">
+            <div className="hidden lg:block space-y-3">
                 {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
                     <VideoRowCardSkeleton
                         key={index}
@@ -34,7 +34,7 @@ function SuggestionsSectionSkeleton() {
                     />
                 ))}
             </div>
-            <div className="xl:hidden grid md:grid-cols-3 sm:grid-cols-2 gap-4">
+            <div className="lg:hidden grid md:grid-cols-3 sm:grid-cols-2 gap-4">
                 {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
                     <VideoGridCardSkeleton
                         key={index}
@@ -54,7 +54,7 @@ function SuggestionsSectionSuspense({ videoId, isManual }: suggestionsSectionPro
     })
     return (
         <>
-            <div className="hidden xl:block space-y-3">
+            <div className="hidden lg:block space-y-3">
                 {suggestions.pages.flatMap(page => page.items).map((video) => (
                     <VideoRowCard
                         key={video.id}
@@ -63,7 +63,7 @@ function SuggestionsSectionSuspense({ videoId, isManual }: suggestionsSectionPro
                     />
                 ))}
             </div>
-            <div className="xl:hidden block space-y-3">
+            <div className="lg:hidden block space-y-3">
                 <div className="grid md:grid-cols-3 sm:grid-cols-2  gap-2">
                     {suggestions.pages.flatMap(page => page.items).map((video) => (
                         <VideoGridCard

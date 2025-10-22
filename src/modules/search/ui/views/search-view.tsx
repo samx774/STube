@@ -8,8 +8,10 @@ interface SearchProps {
 
 export default function SearchView({ query, categoryId }: SearchProps) {
     return (
-        <div className="max-w-[1300px] mx-auto mb-10 flex flex-col gap-y-6 px-4 pt-2.5">
-            <CategoriesSection categoryId={categoryId} />
+        <div className="max-w-[1300px] mx-auto mb-10 flex flex-col gap-y-6  pt-2.5">
+            <div className="px-4">
+                <CategoriesSection categoryId={categoryId} />
+            </div>
             <ResultsSection query={query} categoryId={categoryId} />
         </div>
     )

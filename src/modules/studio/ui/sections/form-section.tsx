@@ -21,6 +21,7 @@ import { z } from 'zod';
 import ThumbnailUploadModal from "../components/thumbnail-upload-modal";
 import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip"
 import GenerateTitleModal from "../components/generate-title-modal";
+import { APP_URL } from "@/constants";
 
 interface FormSectionProps {
     videoId: string;
@@ -89,7 +90,7 @@ export default function FormSection({ videoId }: FormSectionProps) {
         update.mutateAsync(data);
     }
 
-    const fullUrl = `${process.env.VERCEL_URL || "http://localhost:3000"}/videos/${video.id}`;
+    const fullUrl = `${APP_URL}/videos/${video.id}`;
 
     const onCopy = async () => {
         await navigator.clipboard.writeText(fullUrl);
