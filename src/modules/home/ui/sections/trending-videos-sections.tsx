@@ -6,21 +6,17 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 
-interface HomeVideosSectionProps {
-    categoryId?: string;
-}
-
-export default function HomeVideosSection(props: HomeVideosSectionProps) {
+export default function TrendingVideosSection() {
     return (
-        <Suspense key={props.categoryId} fallback={<HomeVideosSectionSkeleton />}>
+        <Suspense fallback={<TrendingVideosSectionSkeleton />}>
             <ErrorBoundary fallback={<div>error</div>}>
-                <HomeVideosSectionSuspense {...props} />
+                <TrendingVideosSectionSuspense />
             </ErrorBoundary>
         </Suspense>
     )
 }
 
-function HomeVideosSectionSkeleton() {
+function TrendingVideosSectionSkeleton() {
     return (
         <div className="gap-4 gap-y-10 grid grid-cols-1 sm:grid-cols-2 sm:px-4 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 [@media(min-width:2560px)]:grid-cols-6" >
             {Array.from({ length: 10 }).map((_, index) => (
@@ -30,10 +26,9 @@ function HomeVideosSectionSkeleton() {
     )
 }
 
-function HomeVideosSectionSuspense({ categoryId }: HomeVideosSectionProps) {
-    const [videos, qurey] = trpc.videos.getMany.useSuspenseInfiniteQuery({
+function TrendingVideosSectionSuspense() {
+    const [videos, qurey] = trpc.videos.getManyTrending.useSuspenseInfiniteQuery({
         limit: 10,
-        categoryId
     }, {
         getNextPageParam: (lastPage) => lastPage.nextCursor
     })
