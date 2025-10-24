@@ -12,7 +12,7 @@ import VideoMenu from "./video-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 
 
-const videoRowCardVariants = cva("group flex min-w-0", {
+const videoRowCardVariants = cva("group md:px-4 flex min-w-0", {
     variants: {
         size: {
             default: "gap-4",

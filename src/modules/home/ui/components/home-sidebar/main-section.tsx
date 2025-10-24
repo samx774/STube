@@ -4,6 +4,7 @@ import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, Side
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { FlameIcon, HomeIcon, PlaySquareIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FunctionComponent } from "react";
 
 interface Item {
@@ -34,6 +35,7 @@ const items: Item[] = [
 ]
 
 export const MainSection = () => {
+    const pathname = usePathname()
     const clerk = useClerk()
     const { isSignedIn } = useAuth()
 
@@ -49,7 +51,7 @@ export const MainSection = () => {
                 <SidebarMenu>
                     {items.map((item) => (
                         <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton tooltip={item.title} asChild isActive={false} onClick={(e) => checkSignIn(item, e)}>
+                            <SidebarMenuButton tooltip={item.title} asChild isActive={pathname === item.href} onClick={(e) => checkSignIn(item, e)}>
                                 <Link href={item.href} className="flex items-center gap-4">
                                     <item.icon />
                                     <span className="text-sm">{item.title}</span>

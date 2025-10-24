@@ -44,7 +44,6 @@ function ResultsSectionSkeleton() {
 }
 
 function ResultsSectionSuspense({ query, categoryId }: ResultsSectionProps) {
-    const isMobile = useIsMobile()
     const { setOpen } = useSidebar()
     const [results, resultsQuery] = trpc.search.getMany.useSuspenseInfiniteQuery({
         query,
@@ -58,19 +57,16 @@ function ResultsSectionSuspense({ query, categoryId }: ResultsSectionProps) {
     }, [query])
     return (
         <>
-            {isMobile ? (
-                <div className="flex flex-col gap-4 gap-y-10">
-                    {results.pages.flatMap(page => page.items).map(video => (
-                        <VideoGridCard key={video.id} data={video} />
-                    ))}
-                </div>
-            ) : (
-                <div className="flex flex-col gap-4">
-                    {results.pages.flatMap(page => page.items).map(video => (
-                        <VideoRowCard key={video.id} data={video} />
-                    ))}
-                </div>
-            )}
+            <div className="flex flex-col gap-4 gap-y-10 md:hidden">
+                {results.pages.flatMap(page => page.items).map(video => (
+                    <VideoGridCard key={video.id} data={video} />
+                ))}
+            </div>
+            <div className="md:flex flex-col gap-4 hidden">
+                {results.pages.flatMap(page => page.items).map(video => (
+                    <VideoRowCard key={video.id} data={video} />
+                ))}
+            </div>
             <InfiniteScroll
                 word="videos"
                 hasNextPage={resultsQuery.hasNextPage}

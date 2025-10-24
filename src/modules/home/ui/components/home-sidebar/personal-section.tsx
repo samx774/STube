@@ -5,6 +5,7 @@ import { HistoryIcon, ListVideoIcon, ThumbsUpIcon } from "lucide-react";
 import Link from "next/link";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { FunctionComponent } from "react";
+import { usePathname } from "next/navigation";
 
 interface Item {
     title: string;
@@ -38,6 +39,7 @@ const items: Item[] = [
 export const PersonalSection = () => {
     const clerk = useClerk()
     const { isSignedIn } = useAuth()
+    const pathname = usePathname()
 
     const checkSignIn = (item: Item, e: React.MouseEvent) => {
         if (!isSignedIn && item.auth) {
@@ -52,7 +54,7 @@ export const PersonalSection = () => {
                 <SidebarMenu>
                     {items.map((item) => (
                         <SidebarMenuItem key={item.title}>
-                            <SidebarMenuButton tooltip={item.title} asChild isActive={false} onClick={(e) => checkSignIn(item, e)}>
+                            <SidebarMenuButton tooltip={item.title} asChild isActive={pathname === item.href} onClick={(e) => checkSignIn(item, e)}>
                                 <Link href={item.href} className="flex items-center gap-4">
                                     <item.icon />
                                     <span className="text-sm">{item.title}</span>

@@ -36,8 +36,8 @@ export function VideoInfo({ data, onRemove }: VideoInfoProps) {
         }).format(data.viewCount);
     }, [data.viewCount]);
     return (
-        <div className="flex gap-3 mt-1 sm:px-0 px-4">
-            <Link className="sm:hidden lg:block" href={`/users/${data.user.id}`}>
+        <div className="flex gap-3 mt-1 md:px-0 px-4">
+            <Link className="md:hidden lg:block" href={`/users/${data.user.id}`}>
                 <UserAvatar
                     name={data.user.name}
                     imageUrl={data.user.imageUrl}
