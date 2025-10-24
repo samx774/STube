@@ -62,6 +62,7 @@ export default function VideoReactions({
     },
     onSettled: () => {
       utils.videos.getOne.invalidate({ id: videoId });
+      utils.playlists.getLiked.invalidate()
     },
   });
 
@@ -105,6 +106,7 @@ export default function VideoReactions({
     },
     onSettled: () => {
       utils.videos.getOne.invalidate({ id: videoId });
+      utils.playlists.getLiked.invalidate();
     },
   });
 
