@@ -137,13 +137,13 @@ function VideosSectionSuspense() {
                                         {format(new Date(video.createdAt), "d MMM yyyy")}
                                     </TableCell>
                                     <TableCell className="text-end">
-                                        views
+                                        {video.viewCount}
                                     </TableCell>
                                     <TableCell className="text-end">
-                                        comments
+                                        {video.commentCount}
                                     </TableCell>
                                     <TableCell className="text-end pe-6">
-                                        likes
+                                        {video.likeCount}
                                     </TableCell>
                                 </TableRow>
                             </Link>

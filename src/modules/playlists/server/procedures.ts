@@ -5,6 +5,119 @@ import { TRPCError } from "@trpc/server";
 import { and, desc, eq, getTableColumns, lt, or, sql } from "drizzle-orm";
 import { z } from "zod";
 export const playlistsRouter = createTRPCRouter({
+    remove: protectedProcedure.input(z.object({ id: z.uuid() })).mutation(async ({ input, ctx }) => {
+        const { id: userId } = ctx.user;
+        const { id } = input;
+
+
+        const [deletedPlaylist] = await db
+            .delete(playlists)
+            .where(and(eq(playlists.id, id), eq(playlists.userId, userId)))
+            .returning()
+
+        if (!deletedPlaylist) {
+            throw new TRPCError({
+                code: "NOT_FOUND"
+            })
+        }
+        return deletedPlaylist
+    }),
+    getOne: protectedProcedure.input(z.object({ id: z.uuid() })).query(async ({ input, ctx }) => {
+        const { id: userId } = ctx.user;
+        const { id } = input;
+
+        const [existingPlaylist] = await db
+            .select()
+            .from(playlists)
+            .where(and(eq(playlists.id, id), eq(playlists.userId, userId)))
+
+        if (!existingPlaylist) {
+            throw new TRPCError({
+                code: "NOT_FOUND"
+            })
+        }
+
+        return existingPlaylist
+    }),
+    getVideos: protectedProcedure.input(z.object({
+        playlistId: z.uuid(),
+        cursor: z.object({
+            id: z.uuid(),
+            updatedAt: z.date()
+        })
+            .nullish(),
+        limit: z.number().min(1).max(100),
+    })).query(async ({ input, ctx }) => {
+        const { id: userId } = ctx.user;
+        const { cursor, limit, playlistId } = input;
+
+        const [existingPlaylist] = await db
+            .select()
+            .from(playlists)
+            .where(and(eq(playlists.id, playlistId), eq(playlists.userId, userId)))
+
+        if (!existingPlaylist) {
+            throw new TRPCError({
+                code: "NOT_FOUND"
+            })
+        }
+
+        const videosFromPlaylist = db.$with("playlist_videos").as(
+            db
+                .select({
+                    videoId: playlistVideos.videoId,
+                })
+                .from(playlistVideos)
+                .where(eq(playlistVideos.playlistId, playlistId))
+        )
+
+        const data = await db
+            .with(videosFromPlaylist)
+            .select({
+                ...getTableColumns(videos),
+                user: users,
+                viewCount: db.$count(videoViews, eq(videoViews.videoId, videos.id)),
+                likeCount: db.$count(videoReactions, and(
+                    eq(videoReactions.videoId, videos.id),
+                    eq(videoReactions.type, 'like'),
+                )),
+                dislikeCount: db.$count(videoReactions, and(
+                    eq(videoReactions.videoId, videos.id),
+                    eq(videoReactions.type, 'dislike'),
+                )),
+
+
+            })
+            .from(videos)
+            .innerJoin(users, eq(videos.userId, users.id))
+            .innerJoin(videosFromPlaylist, eq(videos.id, videosFromPlaylist.videoId))
+            .where(and(
+                eq(videos.visibility, "public"),
+                cursor
+                    ? or(
+                        lt(videos.updatedAt, cursor.updatedAt),
+                        and(
+                            eq(videos.updatedAt, cursor.updatedAt),
+                            lt(videos.id, cursor.id)
+                        )
+                    )
+                    : undefined
+            )).orderBy(desc(videos.updatedAt), desc(videos.id))
+            .limit(limit + 1)
+
+        const hasMore = data.length > limit;
+        const items = hasMore ? data.slice(0, -1) : data;
+        const lastItem = items[items.length - 1]
+        const nextCursor = hasMore ? {
+            id: lastItem.id,
+            updatedAt: lastItem.updatedAt
+        } : null;
+
+        return {
+            items,
+            nextCursor
+        }
+    }),
     removeVideo: protectedProcedure.input(z.object({ playlistId: z.uuid(), videoId: z.uuid() })).mutation(async ({ input, ctx }) => {
         const { playlistId, videoId } = input;
         const { id: userId } = ctx.user;
