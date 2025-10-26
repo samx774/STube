@@ -20,7 +20,7 @@ export default function LikedVideosSection() {
 function LikedVideosSectionSkeleton() {
     return (
         <div>
-            <div className="flex flex-col gap-4 gap-y-10 md:hidden" >
+            <div className="flex flex-col gap-4 gap-y-5 md:hidden" >
                 {Array.from({ length: 10 }).map((_, index) => (
                     <VideoGridCardSkeleton key={index} />
                 ))}
@@ -43,12 +43,12 @@ function LikedVideosSectionSuspense() {
     return (
         <div>
 
-            <div className="flex flex-col gap-4 gap-y-10 md:hidden">
+            <div className="flex flex-col gap-4 gap-y-5 md:hidden">
                 {videos.pages.flatMap(page => page.items).map(video => (
                     <VideoGridCard key={video.id} data={video} />
                 ))}
             </div>
-            <div className="md:flex flex-col gap-4 hidden">
+            <div className="md:flex flex-col gap-2 hidden">
                 {videos.pages.flatMap(page => page.items).map(video => (
                     <VideoRowCard key={video.id} data={video} size={"compact"} />
                 ))}

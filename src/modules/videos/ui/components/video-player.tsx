@@ -22,7 +22,6 @@ export const VideoPlayer = ({
 }: VideoPlayerProps) => {
     return (
         <MuxPlayer
-            muted={false}
             playbackId={playbackId!}
             poster={thumbnailUrl || "/placeholder.svg"}
             playerInitTime={0}

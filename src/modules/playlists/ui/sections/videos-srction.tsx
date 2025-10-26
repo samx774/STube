@@ -25,12 +25,12 @@ export default function VideosSection({ playlistId }: VideosSectionProps) {
 function VideosSectionSkeleton() {
     return (
         <div>
-            <div className="flex flex-col gap-4 gap-y-10 md:hidden" >
+            <div className="flex flex-col gap-4 gap-y-5 md:hidden" >
                 {Array.from({ length: 10 }).map((_, index) => (
                     <VideoGridCardSkeleton key={index} />
                 ))}
             </div>
-            <div className="hidden flex-col gap-4 md:flex" >
+            <div className="hidden flex-col gap-2 md:flex" >
                 {Array.from({ length: 10 }).map((_, index) => (
                     <VideoRowCardSkeleton size={"compact"} key={index} />
                 ))}
@@ -62,12 +62,12 @@ function VideosSectionSuspense({ playlistId }: VideosSectionProps) {
     return (
         <div>
 
-            <div className="flex flex-col gap-4 gap-y-10 md:hidden">
+            <div className="flex flex-col gap-4 gap-y-5 md:hidden">
                 {videos.pages.flatMap(page => page.items).map(video => (
                     <VideoGridCard key={video.id} data={video} onRemove={() => removeVideo.mutate({ playlistId, videoId: video.id })} />
                 ))}
             </div>
-            <div className="md:flex flex-col gap-4 hidden">
+            <div className="md:flex flex-col gap-2 hidden">
                 {videos.pages.flatMap(page => page.items).map(video => (
                     <VideoRowCard key={video.id} data={video} size={"compact"} onRemove={() => removeVideo.mutate({ playlistId, videoId: video.id })} />
                 ))}
