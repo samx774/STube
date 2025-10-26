@@ -20,7 +20,7 @@ export const VideoThumbnailSkeleton = () => {
 export default function VideoThumbnail({ title, imageUrl, previewUrl, duration }: VideoThumbnailProps) {
     return (
         <div className="relative group">
-            <div className="relative w-full overflow-hidden sm:rounded-xl aspect-video">
+            <div className="relative w-full overflow-hidden sm:rounded-lg aspect-video">
                 <Image
                     src={imageUrl ?? "/placeholder.svg"}
                     alt={title}

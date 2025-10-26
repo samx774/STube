@@ -54,7 +54,7 @@ function SuggestionsSectionSuspense({ videoId, isManual }: suggestionsSectionPro
     })
     return (
         <>
-            <div className="hidden lg:block space-y-3">
+            <div className="hidden lg:block space-y-1.5">
                 {suggestions.pages.flatMap(page => page.items).map((video) => (
                     <VideoRowCard
                         key={video.id}

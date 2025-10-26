@@ -8,8 +8,8 @@ interface VideoViewProps {
 
 export default function VideoView({ videoId }: VideoViewProps) {
     return (
-        <div className="flex flex-col max-w-[1700px] mx-auto pt-2.5 md:px-4 mb-10">
-            <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col pt-2.5 md:px-4 mb-10">
+            <div className="flex flex-col lg:flex-row gap-2">
                 <div className="flex-1 min-w-0">
                     <VideoSection videoId={videoId} />
                     <div className="lg:hidden pt-2.5 sm:px-4 block mt-4">
