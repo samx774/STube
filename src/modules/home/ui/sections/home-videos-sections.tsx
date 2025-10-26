@@ -22,7 +22,7 @@ export default function HomeVideosSection(props: HomeVideosSectionProps) {
 
 function HomeVideosSectionSkeleton() {
     return (
-        <div className="gap-4 gap-y-10 grid grid-cols-1 sm:grid-cols-2 sm:px-4 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 [@media(min-width:2560px)]:grid-cols-6" >
+        <div className="gap-4 gap-y-5 grid grid-cols-1 sm:grid-cols-2 sm:px-4 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 [@media(min-width:2560px)]:grid-cols-6" >
             {Array.from({ length: 10 }).map((_, index) => (
                 <VideoGridCardSkeleton key={index} />
             ))}
@@ -39,7 +39,7 @@ function HomeVideosSectionSuspense({ categoryId }: HomeVideosSectionProps) {
     })
     return (
         <div>
-            <div className="gap-4 gap-y-10 grid grid-cols-1 sm:grid-cols-2 sm:px-4 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 [@media(min-width:2560px)]:grid-cols-6" >
+            <div className="gap-4 gap-y-5 grid grid-cols-1 sm:grid-cols-2 sm:px-4 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5 [@media(min-width:2560px)]:grid-cols-6" >
                 {videos.pages.flatMap(page => page.items).map(video => (
                     <VideoGridCard key={video.id} data={video} />
                 ))}

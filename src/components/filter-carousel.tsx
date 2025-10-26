@@ -83,8 +83,8 @@ export default function FilterCarousel({ value, isLoading, onSelect, data }: Fil
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="start-0 z-20" />
-                <CarouselNext className="end-0 z-20" />
+                <CarouselPrevious className="left-0 z-20" />
+                <CarouselNext className="right-0 z-20" />
             </Carousel>
             <div className={cn("absolute right-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-background to-transparent pointer-events-none",
                 current === count && "hidden"
