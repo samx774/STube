@@ -25,7 +25,7 @@ export default function StudioSidebarHeader() {
         return (
             <SidebarMenuItem>
                 <SidebarMenuButton tooltip={"Your Profile"} asChild>
-                    <Link href={"/users/current"}>
+                    <Link href={`/users/current`}>
                         <UserAvatar imageUrl={user?.imageUrl!} name={user?.fullName ?? "User"} size={"xs"} />
                         <span className="text-sm">Your profile</span>
                     </Link>
