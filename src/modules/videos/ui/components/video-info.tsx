@@ -37,24 +37,24 @@ export function VideoInfo({ data, onRemove }: VideoInfoProps) {
     }, [data.viewCount]);
     return (
         <div className="flex gap-3 mt-1 md:px-0 px-4">
-            <Link className="md:hidden lg:block" href={`/users/${data.user.id}`}>
+            <Link prefetch  className="md:hidden lg:block" href={`/users/${data.user.id}`}>
                 <UserAvatar
                     name={data.user.name}
                     imageUrl={data.user.imageUrl}
                 />
             </Link>
             <div className="min-w-0 flex-1">
-                <Link href={`/videos/${data.id}`}>
+                <Link prefetch  href={`/videos/${data.id}`}>
                     <h3 className="font-medium line-clamp-1 lg:line-clamp-2 text-base break-words">
                         {data.title}
                     </h3>
                 </Link>
-                <Link href={`/users/${data.user.id}`}>
+                <Link prefetch  href={`/users/${data.user.id}`}>
                     <UserInfo
                         name={data.user.name}
                     />
                 </Link>
-                <Link href={`/videos/${data.id}`}>
+                <Link prefetch  href={`/videos/${data.id}`}>
                     <p className="text-sm text-muted-foreground line-clamp-1">
                         {compactViews} views • {compactDate}
                     </p>

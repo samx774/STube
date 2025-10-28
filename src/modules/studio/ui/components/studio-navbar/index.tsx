@@ -10,9 +10,11 @@ export const StudioNavbar = () => {
             <div className="flex items-center gap-4 w-full justify-between">
                 <div className="flex items-center shrink-0">
                     <SidebarTrigger />
-                    <Link href="/studio" className="p-4 flex items-center gap-1">
-                        <Image src="/image.png" alt="Logo" width={32} height={32} />
-                        <h3 className="text-xl font-bold tracking-tight">Studio</h3>
+                    <Link prefetch  href="/studio" className="hidden md:block">
+                        <div className="p-4 flex items-center gap-1">
+                            <Image src="/image.png" alt="Logo" width={32} height={32} />
+                            <h3 className="text-xl font-bold tracking-tight">Studio</h3>
+                        </div>
                     </Link>
                 </div>
                 <div className="shrink-0 flex items-center gap-4">

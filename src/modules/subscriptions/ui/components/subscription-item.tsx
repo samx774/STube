@@ -39,7 +39,7 @@ export default function SubscriptionItem({
 }: SubscriptionItemProps) {
     return (
         <div className="flex items-center gap-4">
-            <Link href={`/users/${user}`}>
+            <Link prefetch  href={`/users/${user}`}>
                 <UserAvatar
                     size={"lg"}
                     imageUrl={imageUrl}
@@ -49,7 +49,7 @@ export default function SubscriptionItem({
 
             <div className="flex-1">
                 <div className="flex items-center justify-between">
-                    <Link href={`/users/${user}`}>
+                    <Link prefetch  href={`/users/${user}`}>
                         <div>
                             <h3 className="text-sm font-medium">{name}</h3>
                             <p className="text-xs text-muted-foreground">{subscriberCount.toLocaleString()} subscribers</p>
