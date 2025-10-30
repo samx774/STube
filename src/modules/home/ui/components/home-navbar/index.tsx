@@ -14,7 +14,7 @@ export const HomeNavbar = () => {
                     <SidebarTrigger />
                     <Link prefetch href="/" className="hidden md:block">
                         <div className="p-4 flex items-center gap-1">
-                            <Image src="/image.png" alt="Logo" width={32} height={32} />
+                            <Image src="/logo.svg" alt="Logo" width={32} height={32} />
                             <h3 className="text-xl font-bold tracking-tight">STube</h3>
                         </div>
                     </Link>
