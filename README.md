@@ -1,36 +1,137 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 STube
 
-## Getting Started
+A modern, feature-rich video sharing platform built with **Next.js 16**, featuring advanced video processing, AI-powered content generation, and a comprehensive creator studio.
 
-First, run the development server:
+---
 
+## ✨ Key Features
+
+### 🎥 Video Experience
+- **Advanced Video Player** – Smooth playback with quality controls and adaptive streaming.  
+- **Real-time Video Processing** – Powered by Mux for optimal video delivery.  
+- **Multiple Content Feeds** – Discover content through personalized recommendations.  
+- **Watch History Tracking** – Keep track of your viewing journey.  
+
+### 🤖 AI-Powered Tools
+- **Automatic Video Transcription** – Generate accurate transcripts automatically.  
+- **AI Title & Description Generation** – Create engaging content with AI assistance.  
+
+### 📊 Creator Studio
+- **Comprehensive Analytics** – Track your content performance with detailed metrics.  
+- **Content Management** – Easy-to-use interface for managing your videos.  
+- **Custom Playlist Management** – Organize content into curated playlists.  
+
+### 💬 Community Features
+- **Interactive Comment System** – Engage with your audience.  
+- **Like & Subscription System** – Build and grow your community.  
+- **User Profiles** – Personalized user experiences.  
+
+### 🔐 Technical Highlights
+- **Authentication System** – Secure user authentication and authorization.  
+- **Module-based Architecture** – Clean, maintainable codebase.  
+- **Type-safe APIs** – Built with tRPC for end-to-end type safety.  
+- **Responsive Design** – Optimized for all devices and screen sizes.  
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies |
+|-----------|---------------|
+| **Framework** | Next.js 16 & React 19 |
+| **Database** | PostgreSQL with DrizzleORM |
+| **API** | tRPC for type-safe API development |
+| **Styling** | TailwindCSS & ShadcnUI |
+| **Video Processing** | Mux |
+| **Architecture** | Modular and scalable design |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 20+  
+- PostgreSQL database  
+- Mux account for video processing  
+
+### Installation
+
+**1. Clone the repository**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/samx774/STube.git
+cd STube
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**2. Install dependencies**
+```bash
+npm install
+# or
+pnpm install
+# or
+yarn install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**3. Set up environment variables**
+```bash
+cp .env.example .env
+```
+Configure your environment variables including:
+- Database connection  
+- Mux API credentials  
+- Authentication secrets  
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**4. Run database migrations**
+```bash
+npm run db:push
+```
 
-## Learn More
+**5. Start the development server**
+```bash
+npm run dev
+```
+Then open [http://localhost:3000](http://localhost:3000) to view the application.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## 🤝 Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Fork the repository  
+2. Create your feature branch  
+   ```bash
+   git checkout -b feature/AmazingFeature
+   ```
+3. Commit your changes  
+   ```bash
+   git commit -m 'Add some AmazingFeature'
+   ```
+4. Push to the branch  
+   ```bash
+   git push origin feature/AmazingFeature
+   ```
+5. Open a Pull Request  
+
+---
+
+
+
+## 👨‍💻 Author
+
+**samx774**  
+GitHub: [@samx774](https://github.com/samx774)
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org)  
+- Video processing by [Mux](https://mux.com)  
+- UI components from [ShadcnUI](https://ui.shadcn.com)  
+- Styled with [TailwindCSS](https://tailwindcss.com)  
+
+---
+
+⭐ **Star this repository if you find it helpful!**
