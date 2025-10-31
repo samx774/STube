@@ -21,7 +21,7 @@ export const HomeNavbar = () => {
                 </div>
                 <div className="flex-1 flex justify-center items-center gap-x-3 max-w-[720px] mx-auto">
                     <SearchInput />
-                    <VoiceSearchModal />
+                    {/* <VoiceSearchModal /> */}
                 </div>
                 <div className="shrink-0 flex items-center gap-4">
                     <ModeToggle />
