@@ -5,6 +5,7 @@ import "./globals.css";
 import { TRPCProvider } from "@/trpc/client";
 import { Toaster } from "@/components/ui/sonner"
 import { ThemeProvider } from "@/components/theme-provider";
+import { Analytics } from "@vercel/analytics/next"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({
           >
             <TRPCProvider>
               <Toaster />
+              <Analytics />
               {children}
             </TRPCProvider>
           </ThemeProvider>

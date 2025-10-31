@@ -2,11 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export default function useSpeechToText() {
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any;
+  }
+}
+
+export default function useSpeechToText(onSilence?: () => void) {
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const recognitionRef = useRef<any | null>(null);
-  const shouldRestart = useRef(false); 
+  const silenceTimer = useRef<NodeJS.Timeout | null>(null);
+  const shouldRestart = useRef(false);
 
   useEffect(() => {
     if (!("webkitSpeechRecognition" in window)) {
@@ -25,6 +32,14 @@ export default function useSpeechToText() {
         currentTranscript += event.results[i][0].transcript;
       }
       setTranscript(currentTranscript.trim());
+
+      // 🔥 Reset silence timer whenever new speech detected
+      if (silenceTimer.current) clearTimeout(silenceTimer.current);
+      silenceTimer.current = setTimeout(() => {
+        console.log("Silence detected, stopping...");
+        stopListening(); // ⬅️ stop listening automatically
+        onSilence?.(); // ⬅️ notify parent component (optional)
+      }, 200); // ⏱️ stop after 1 seconds of silence
     };
 
     recognition.onerror = (event: any) => {
@@ -45,22 +60,20 @@ export default function useSpeechToText() {
 
     return () => {
       recognition.stop();
+      if (silenceTimer.current) clearTimeout(silenceTimer.current);
     };
   }, []);
 
   const startListening = () => {
     if (!recognitionRef.current) return;
 
-    const recognition = recognitionRef.current;
     shouldRestart.current = true;
-    setTranscript("");
-    recognition.start();
+    recognitionRef.current.start();
     setListening(true);
   };
 
   const stopListening = () => {
     if (!recognitionRef.current) return;
-
     shouldRestart.current = false;
     recognitionRef.current.stop();
     setListening(false);
@@ -71,5 +84,6 @@ export default function useSpeechToText() {
     transcript,
     startListening,
     stopListening,
+    setTranscript,
   };
 }

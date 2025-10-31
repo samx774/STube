@@ -5,26 +5,38 @@ import ResponsiveDialog from "@/components/responsive-dialog";
 import { Button } from "@/components/ui/button";
 import { MicIcon } from "lucide-react";
 import useSpeechToText from "@/modules/search/hooks/use-speech-to-text";
+import { useRouter, useSearchParams } from "next/navigation";
+import { APP_URL } from "@/constants";
 
-declare global {
-    interface Window {
-        webkitSpeechRecognition: any;
-    }
-}
+
 
 export default function VoiceSearchModal() {
     const [open, setOpen] = useState(false);
-    const { listening, transcript, startListening, stopListening } = useSpeechToText();
-
+    const { listening, transcript, startListening, stopListening } = useSpeechToText(handleSearch);
+    const searchParams = useSearchParams()
+    const categoryId = searchParams.get('categoryId') || ""
+    const router = useRouter();
     const startStopListening = () => {
-        listening ? stopVoiceInput() : startListening()
+        listening ? handleSearch() : startListening()
     }
 
-    const stopVoiceInput = () => {
+    function handleSearch() {
+        const newQuery = transcript
+        console.log("testttt", transcript)
+        const url = new URL("/search", APP_URL);
+        url.searchParams.set("query", encodeURIComponent(newQuery));
+
+        if (categoryId) {
+            url.searchParams.set("categoryId", categoryId);
+        }
+
+        if (newQuery === "") {
+            url.searchParams.delete("query");
+        }
+        router.push(url.toString());
         stopListening()
         setOpen(false)
     }
-
 
 
     return (
