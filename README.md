@@ -82,7 +82,7 @@ Configure your environment variables including:
 
 **4. Run database migrations**
 ```bash
-npm run db:push
+npx drizzle-kit-studio push
 ```
 
 **5. Start the development server**
