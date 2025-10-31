@@ -120,7 +120,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 👨‍💻 Author
 
-**samx774**  
+**Samx**  
 GitHub: [@samx774](https://github.com/samx774)
 
 ---
