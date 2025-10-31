@@ -159,6 +159,7 @@ export default function FormSection({ videoId }: FormSectionProps) {
                                                     <TooltipTrigger type="button">
                                                         <Button
                                                             variant={'outline'}
+                                                            disabled={video.muxStatus !== "ready"}
                                                             size={'icon'}
                                                             type="button"
                                                             className="rounded-full size-6 cursor-pointer [&_svg]:size-3"
@@ -167,7 +168,11 @@ export default function FormSection({ videoId }: FormSectionProps) {
                                                             <SparklesIcon className="size-2" />
                                                         </Button>
                                                         <TooltipContent>
-                                                            <p>Generate Title And Description With AI</p>
+                                                            {video.muxStatus !== "ready" ? (
+                                                                <p>Video is not ready</p>
+                                                            ) : (
+                                                                <p>Generate Title And Description With AI</p>
+                                                            )}
                                                         </TooltipContent>
                                                     </TooltipTrigger>
                                                 </Tooltip>
@@ -283,7 +288,7 @@ export default function FormSection({ videoId }: FormSectionProps) {
                                                 Video link
                                             </p>
                                             <div className="flex items-center gap-x-2">
-                                                <Link prefetch  href={`/videos/${video.id}`}>
+                                                <Link prefetch href={`/videos/${video.id}`}>
                                                     <p className="line-clamp-1 text-sm text-blue-500">
                                                         {fullUrl}
                                                     </p>
