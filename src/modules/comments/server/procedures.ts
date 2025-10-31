@@ -2,7 +2,7 @@ import { db } from "@/db";
 import { commentReactions, comments, users, videos } from "@/db/schema";
 import { baseProcedure, createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { TRPCError } from "@trpc/server";
-import { and, count, desc, eq, getTableColumns, inArray, isNotNull, isNull, lt, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableColumns, inArray, isNotNull, isNull, lt, or } from "drizzle-orm";
 import z from "zod";
 
 export const commentsRouter = createTRPCRouter({
@@ -148,7 +148,14 @@ export const commentsRouter = createTRPCRouter({
                 .innerJoin(users, eq(comments.userId, users.id))
                 .leftJoin(viewerReaction, eq(comments.id, viewerReaction.commentId))
                 .leftJoin(replies, eq(comments.id, replies.parentId))
-                .orderBy(desc(comments.updatedAt), desc(comments.id))
+                .orderBy(
+                    parentId
+                        ? asc(comments.updatedAt)  
+                        : desc(comments.updatedAt),
+                    parentId
+                        ? asc(comments.id)
+                        : desc(comments.id)
+                )
                 .limit(limit + 1)
         ])
 
