@@ -52,6 +52,7 @@ A modern, feature-rich video sharing platform built with **Next.js 16**, featuri
 ### Prerequisites
 - Node.js 20+  
 - PostgreSQL database  
+- Clerk account for authentication  
 - Mux account for video processing  
 
 ### Installation
